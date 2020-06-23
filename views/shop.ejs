@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= docTitle %></title>
+    <link rel="stylesheet" href="/css/main.css" />
+    <link rel="stylesheet" href="/css/product.css" />
+  </head>
+
+  <body>
+    <header class="main-header">
+      <nav class="main-header__nav">
+        <ul class="main-header__item-list">
+          <li class="main-header__item"><a href="/">Shop</a></li>
+          <li class="main-header__item">
+            <a href="/admin/add-product">Add Product</a>
+          </li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <% if(prods.length > 0) { %>
+      <div class="grid">
+        <% for (let product of prods) { %>
+        <article class="card product-item">
+          <header class="card__header">
+            <h1 class="product__title"><%= product.title%></h1>
+          </header>
+          <div class="card__image">
+            <img
+              src="https://images.unsplash.com/photo-1519682337058-a94d519337bc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80"
+              alt="Book"
+            />
+          </div>
+          <div class="card__content">
+            <h2 class="product__price">$19.99</h2>
+            <p class="product_description">A very</p>
+          </div>
+          <div class="card__actions">
+            <button class="btn">Add To Cart</button>
+          </div>
+        </article>
+        <% } %>
+      </div>
+      <% } else { %>
+      <h1>No Product Found</h1>
+      <%}%>
+    </main>
+  </body>
+</html>
