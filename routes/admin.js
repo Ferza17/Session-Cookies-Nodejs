@@ -2,26 +2,14 @@ const express = require("express");
 const path = require("path");
 const router = express.Router();
 
-const rootDir = require("../util/path");
+const ProductsController = require('../controllers/products');
 
-const products = [];
+
 
 //  /admin/add-product
-router.get("/add-product", (req, res, next) => {
-  res.render('add-product',
-    {
-      docTitle: "Add Product",
-      path: '/admin/add-product',
-      activeProduct: true,
-      productCSS: true
-    });
-});
+router.get("/add-product", ProductsController.getAddProduct);
 
 // /admin/add-product
-router.post("/add-product", (req, res, next) => {
-  products.push({ title: req.body.title });
-  res.redirect("/");
-});
+router.post("/add-product", ProductsController.postAddProduct);
 
 exports.routes = router;
-exports.products = products;
