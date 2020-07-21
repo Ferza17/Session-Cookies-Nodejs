@@ -18,15 +18,18 @@ const getProductsFromFIle = async (cb) => {
 };
 
 module.exports = class Product {
-  constructor(title) {
+  constructor(title, imageURL, price, description) {
     this.title = title;
+    this.imageURL = imageURL;
+    this.price = price;
+    this.description = description;
   }
 
   save() {
     getProductsFromFIle((products) => {
       products.push(this);
-        fs.writeFile(p, JSON.stringify(products), err => {
-            console.log(err);
+      fs.writeFile(p, JSON.stringify(products), (err) => {
+        console.log(err);
       });
     });
   }
