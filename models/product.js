@@ -20,12 +20,13 @@ const getProductsFromFIle = async (cb) => {
 module.exports = class Product {
   constructor(title, imageURL, price, description) {
     this.title = title;
-    this.imageURL = imageURL;
+    this.imageUrl = imageURL;
     this.price = price;
     this.description = description;
   }
 
   save() {
+    this.id = Math.random().toString();
     getProductsFromFIle((products) => {
       products.push(this);
       fs.writeFile(p, JSON.stringify(products), (err) => {
@@ -35,6 +36,12 @@ module.exports = class Product {
   }
 
   static fetchAll(cb) {
-    getProductsFromFIle(cb);
+    return getProductsFromFIle(cb);
+  }
+
+  static findById(id, cb) {
+    getProductsFromFIle((products) => {
+      return cb(products.find((p) => p.id === id));
+    });
   }
 };
