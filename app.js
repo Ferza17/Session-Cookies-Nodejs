@@ -23,9 +23,4 @@ app.use(shopRoutes);
 app.use(errorController.get404);
 
 const port = process.env.PORT || 4000;
-
-// const port_number = server.listen(process.env.PORT || 4000);
-
-// app.listen(port_number);
-
 http.createServer(app).listen(port);
