@@ -22,4 +22,6 @@ app.use(shopRoutes);
 
 app.use(errorController.get404);
 
-app.listen(4000);
+const port_number = server.listen(process.env.PORT || 4000);
+
+app.listen(port_number);
