@@ -4,7 +4,7 @@ exports.getAddProduct = (req, res, next) => {
   res.render("admin/edit-product", {
     pageTitle: "Add Product",
     path: "/admin/add-product",
-    editing: false
+    editing: false,
   });
 };
 
@@ -13,7 +13,7 @@ exports.postAddProduct = (req, res, next) => {
   const imageURL = req.body.imageUrl;
   const price = req.body.price;
   const description = req.body.description;
-  const product = new Product(title, imageURL, price, description);
+  const product = new Product(null, title, imageURL, price, description);
   product.save();
   res.redirect("/");
 };
@@ -28,7 +28,7 @@ exports.getEditProduct = (req, res, next) => {
     if (!product) {
       return res.redirect("/");
     }
-    console.log('product', product)
+    console.log("product", product);
     res.render("admin/edit-product", {
       pageTitle: "Edit Product",
       path: "/admin/edit-product",
@@ -36,6 +36,24 @@ exports.getEditProduct = (req, res, next) => {
       product: product,
     });
   });
+};
+
+exports.postEditProduct = (req, res, next) => {
+  const prodId = req.body.productId;
+  console.log('productId', prodId)
+  const updatedTitle = req.body.title;
+  const updatedPrice = req.body.price;
+  const updatedImageUrl = req.body.imageUrl;
+  const updatedDescription = req.body.description;
+  const updatedProduct = new Product(
+    prodId,
+    updatedTitle,
+    updatedImageUrl,
+    updatedPrice,
+    updatedDescription
+  );
+  updatedProduct.save();
+  return res.redirect('/');
 };
 
 exports.getProducts = (req, res, next) => {
