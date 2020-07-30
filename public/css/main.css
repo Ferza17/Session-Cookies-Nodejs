@@ -99,11 +99,18 @@ main {
   text-decoration: none;
   font: inherit;
   border: 1px solid #00695c;
-  padding: 5px;
+  padding: 5px 20px;
   color: #00695c;
   background: white;
   border-radius: 3px;
   cursor: pointer;
+}
+
+
+.btn_delete:hover {
+  border-color: white !important;
+  background-color: crimson !important;
+  color: white !important;
 }
 
 .btn:hover,
