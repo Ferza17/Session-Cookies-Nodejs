@@ -40,7 +40,7 @@ exports.getEditProduct = (req, res, next) => {
 
 exports.postEditProduct = (req, res, next) => {
   const prodId = req.body.productId;
-  console.log('productId', prodId)
+  console.log("productId", prodId);
   const updatedTitle = req.body.title;
   const updatedPrice = req.body.price;
   const updatedImageUrl = req.body.imageUrl;
@@ -53,7 +53,14 @@ exports.postEditProduct = (req, res, next) => {
     updatedDescription
   );
   updatedProduct.save();
-  return res.redirect('/');
+  return res.redirect("/");
+};
+
+exports.postDeleteProduct = (req, res, next) => {
+  const productId = req.body.productId;
+  console.log("productId", productId);
+  Product.deleteById(productId);
+  res.redirect("/admin/products");
 };
 
 exports.getProducts = (req, res, next) => {
