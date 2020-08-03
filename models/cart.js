@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const { isNumber } = require("util");
 const p = path.join(
   path.dirname(process.mainModule.filename),
   "data",
@@ -31,10 +32,10 @@ module.exports = class Cart {
         updatedProduct = { id: id, qty: 1 };
         cart.products = [...cart.products, updatedProduct];
       }
-      cart.totalPrice = cart.totalPrice + productPrice;
-      cart.totalPrice.toFixed(2);
-      fs.writeFile(p, JSON.stringify(cart), (err) => {
-      });
+      const total = cart.totalPrice + productPrice;
+
+      cart.totalPrice = parseFloat(total.toFixed(2));
+      fs.writeFile(p, JSON.stringify(cart), (err) => {});
     });
   }
 
@@ -49,9 +50,8 @@ module.exports = class Cart {
       updatedCart.products = updatedCart.products.filter(
         (prod) => prod.id !== id
       );
-      updatedCart.totalPrice =
-        updatedCart.totalPrice - productPrice * productQty;
-      updatedCart.totalPrice.toFixed(2);
+      const total = updatedCart.totalPrice - productPrice * productQty;
+      updatedCart.totalPrice = parseFloat(total.toFixed(2));
       fs.writeFile(p, JSON.stringify(updatedCart), (err) => {
         console.log(err);
       });
