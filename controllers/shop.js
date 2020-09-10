@@ -3,16 +3,18 @@ const Cart = require("../models/cart");
 
 // Call Back Functions
 exports.getProducts = (req, res, next) => {
-  Product.fetchAll((products) => {
-    res.render("shop/product-list", {
-      prods: products,
-      pageTitle: "All Products",
-      path: "/products",
-      hasProduct: products.length > 0,
-      activeShop: true,
-      productCSS: true,
-    });
-  });
+  Product.find()
+    .then((products) => {
+      res.render("shop/product-list", {
+        prods: products,
+        pageTitle: "All Products",
+        path: "/products",
+        hasProduct: products.length > 0,
+        activeShop: true,
+        productCSS: true,
+      });
+    })
+    .catch((err) => {});
 };
 
 exports.getProduct = (req, res, next) => {

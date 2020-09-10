@@ -4,8 +4,10 @@ const bodyParser = require("body-parser");
 const path = require("path");
 const app = express();
 
+const mongoose = require("mongoose");
+
 // Mongodb Connection
-const mongoConnect = require("./util/database");
+// const mongoConnect = require("./util/database");
 
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
@@ -26,7 +28,12 @@ app.use(errorController.get404);
 
 const port = process.env.PORT || 4000;
 
-mongoConnect((client) => {
-  console.log(client);
-  http.createServer(app).listen(port);
-});
+mongoose
+  .connect("mongodb://localhost:27017/course")
+  .then((result) => {
+    console.log(result);
+    http.createServer(app).listen(port);
+  })
+  .catch((err) => {
+    console.log("err :>> ", err);
+  });

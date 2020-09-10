@@ -13,9 +13,21 @@ exports.postAddProduct = (req, res, next) => {
   const imageURL = req.body.imageUrl;
   const price = parseFloat(req.body.price);
   const description = req.body.description;
-  const product = new Product(null, title, imageURL, price, description);
-  product.save();
-  res.redirect("/");
+  const product = new Product({
+    title: title,
+    price: price,
+    description: description,
+    imageUrl: imageURL,
+  });
+  product
+    .save()
+    .then((result) => {
+      console.log("Created Product");
+      res.redirect("/admin/products");
+    })
+    .catch((err) => {
+      console.log("err created product:>> ", err);
+    });
 };
 
 exports.getEditProduct = (req, res, next) => {
