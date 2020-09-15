@@ -73,14 +73,16 @@ exports.postDeleteProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  Product.fetchAll((products) => {
-    res.render("admin/products", {
-      prods: products,
-      pageTitle: "Admin Products",
-      path: "/admin/products",
-      hasProduct: products.length > 0,
-      activeShop: true,
-      productCSS: true,
-    });
-  });
+  Product.find()
+    .then((products) => {
+      res.render("admin/products", {
+        prods: products,
+        pageTitle: "Admin Products",
+        path: "/admin/products",
+        hasProduct: products.length > 0,
+        activeShop: true,
+        productCSS: true,
+      });
+    })
+    .catch((err) => {});
 };
