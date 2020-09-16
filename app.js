@@ -44,6 +44,7 @@ mongoose
   .then((result) => {
     User.findOne()
       .then((user) => {
+        console.log("user :>> ", user);
         if (!user) {
           const user = new User({
             name: "Fery",
