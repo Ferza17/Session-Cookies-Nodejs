@@ -51,29 +51,19 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.getCart = (req, res, next) => {
-  Cart.getCart((cart) => {
-    const cartProducts = [];
-    Product.find()
-      .then((products) => {
-        products.map((product, productIndex) => {
-          const cartProductData = cart.products.find(
-            (prod) => prod.id === product.id
-          );
-          if (cartProductData) {
-            cartProducts.push({
-              productData: product,
-              qty: cartProductData.qty,
-            });
-          }
-        });
-        res.render("shop/cart", {
-          path: "/cart",
-          pageTitle: "Your Cart",
-          products: cartProducts,
-        });
-      })
-      .catch((err) => {});
-  });
+  req.user
+    .populate("cart.items.productId")
+    .execPopulate()
+    .then((user) => {
+      console.log(" user.cart.items :>> ", user.cart.items);
+      const products = user.cart.items;
+      res.render("shop/cart", {
+        path: "/cart",
+        pageTitle: "Your Cart",
+        products: products,
+      });
+    })
+    .catch((err) => {});
 };
 
 exports.postCart = (req, res, next) => {
@@ -90,10 +80,8 @@ exports.postCart = (req, res, next) => {
 
 exports.postCartDeleteProduct = (req, res, next) => {
   const productId = req.body.productId;
-  Product.findById(productId, (product) => {
-    Cart.deleteProduct(productId, product.price);
-    res.redirect("/cart");
-  });
+  req.user.removeFromCart(productId);
+  res.redirect("/cart");
 };
 
 exports.getCheckout = (req, res, next) => {
