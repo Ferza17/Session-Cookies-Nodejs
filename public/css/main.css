@@ -24,8 +24,10 @@ main {
 
 .main-header__nav {
   height: 100%;
+  width: 100%;
   display: flex;
   align-items: center;
+  justify-content: space-between;
 }
 
 .main-header__item-list {
@@ -105,7 +107,6 @@ main {
   border-radius: 3px;
   cursor: pointer;
 }
-
 
 .btn_delete:hover {
   border-color: white !important;
