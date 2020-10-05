@@ -1,5 +1,5 @@
 exports.getLogin = (req, res, next) => {
-  // const isLoggedIn = req.get("Cookie").split(";")[0].split("=")[1] === "true";
+  // const isLoggedIn = req.session.isLoggedIn === "true";
   console.log(req.session.isLoggedIn);
   res.render("auth/login", {
     path: "/login",
@@ -11,4 +11,11 @@ exports.getLogin = (req, res, next) => {
 exports.postLogin = (req, res, next) => {
   req.session.isLoggedIn = true;
   res.redirect("/");
+};
+
+exports.postLogout = async (req, res, next) => {
+  await req.session.destroy((err) => {
+    console.log("err :>> ", err);
+    res.redirect("/");
+  });
 };
