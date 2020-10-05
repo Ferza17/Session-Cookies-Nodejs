@@ -13,7 +13,7 @@ exports.getProducts = (req, res, next) => {
         hasProduct: products.length > 0,
         activeShop: true,
         productCSS: true,
-        isAuthenticated: req.get("Cookie").split(";")[0].split("=")[1],
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((err) => {});
@@ -30,7 +30,7 @@ exports.getProduct = (req, res, next) => {
         hasProduct: Product.length > 0,
         activeShop: true,
         productCSS: true,
-        isAuthenticated: req.get("Cookie").split(";")[0].split("=")[1],
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((err) => {
@@ -48,7 +48,7 @@ exports.getIndex = (req, res, next) => {
         hasProduct: products.length > 0,
         activeShop: true,
         productCSS: true,
-        isAuthenticated: req.get("Cookie").split(";")[0].split("=")[1],
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((err) => {});
@@ -65,7 +65,7 @@ exports.getCart = (req, res, next) => {
         path: "/cart",
         pageTitle: "Your Cart",
         products: products,
-        isAuthenticated: req.get("Cookie").split(";")[0].split("=")[1],
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((err) => {});
@@ -93,7 +93,7 @@ exports.getCheckout = (req, res, next) => {
   res.render({
     path: "/checkout",
     pageTitle: "Checkout",
-    isAuthenticated: req.get("Cookie").split(";")[0].split("=")[1],
+    isAuthenticated: req.session.isLoggedIn,
   });
 };
 
@@ -104,7 +104,7 @@ exports.getOrders = (req, res, next) => {
         path: "/orders",
         pageTitle: "Your Orders",
         orders: orders,
-        isAuthenticated: req.get("Cookie").split(";")[0].split("=")[1],
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((err) => {});

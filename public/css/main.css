@@ -42,13 +42,17 @@ main {
   padding: 0;
 }
 
-.main-header__item a {
+.main-header__item a,
+form button {
+  font-style: inherit;
   text-decoration: none;
   color: white;
+  border: none;
 }
 
 .main-header__item a:hover,
-.main-header__item a:active,
+form button:hover,
+form button:active .main-header__item a:active,
 .main-header__item a.active {
   color: #ffeb3b;
 }
