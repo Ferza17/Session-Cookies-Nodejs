@@ -1,4 +1,14 @@
 /**
+ *  =========== Packages ==============
+ */
+
+const bcrypt = require("bcryptjs");
+
+/**
+ *  =========== End  Packages =========
+ */
+
+/**
  *  =========== Models ==============
  */
 
@@ -15,21 +25,34 @@ exports.getLogin = (req, res, next) => {
   });
 };
 
-exports.postLogin = async (req, res, next) => {
-  console.log("req.body :>> ", req.body);
-  await User.findOne({
-    email: req.body.email,
-    password: req.body.password,
+exports.postLogin = (req, res, next) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  User.findOne({
+    email: email,
   })
     .then((user) => {
       if (user) {
-        req.session.isLoggedIn = true;
-        req.session.user = user;
-        req.session.save((err) => {
-          console.log("err :>> ", err);
-        });
+        return bcrypt
+          .compare(password, user.password)
+          .then(async (doMatch) => {
+            if (doMatch) {
+              req.session.isLoggedIn = true;
+              req.session.user = user;
+              await req.session.save((err) => {
+                console.log("err session :>> ", err);
+              });
+              return res.redirect("/");
+            }
+            res.redirect("/login");
+          })
+          .catch((err) => {
+            console.log("err :>> ", err);
+            return res.redirect("/login");
+          });
       }
-      res.redirect("/");
+
+      return res.redirect("/login");
     })
     .catch((err) => {});
 };
@@ -49,4 +72,39 @@ exports.getSignup = (req, res, next) => {
   });
 };
 
-exports.postSignup = (req, res, next) => {};
+exports.postSignup = (req, res, next) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  const confirmPassword = req.body.confirmPassword;
+
+  console.log("email :>> ", email);
+  console.log("password :>> ", password);
+
+  User.findOne({
+    email: email,
+  })
+    .then((user) => {
+      if (user) {
+        return res.redirect("/signup");
+      }
+
+      return bcrypt
+        .hash(password, 12)
+        .then((hashedPassword) => {
+          const userData = new User({
+            email: email,
+            password: hashedPassword,
+            cart: {
+              items: [],
+            },
+          });
+          return userData.save();
+        })
+        .then((result) => {
+          res.redirect("/login");
+        });
+    })
+    .catch((err) => {
+      console.log("err email :>> ", err);
+    });
+};
