@@ -77,15 +77,6 @@ app.use(
   })
 );
 
-app.use((req, res, next) => {
-  User.findById("5f60ac7662f9bf41402b5268")
-    .then((user) => {
-      req.user = user;
-      next();
-    })
-    .catch((err) => {});
-});
-
 //Routes
 app.use("/admin", adminRoutes.routes);
 app.use(shopRoutes);
@@ -103,21 +94,6 @@ app.use(errorController.get404);
 mongoose
   .connect(MONGODB_URL)
   .then((result) => {
-    User.findOne()
-      .then((user) => {
-        if (!user) {
-          const user = new User({
-            name: "Fery",
-            email: "fery@email.com",
-            cart: {
-              items: [],
-            },
-          });
-          user.save();
-        }
-      })
-      .catch((err) => {});
-
     http.createServer(app).listen(port);
   })
   .catch((err) => {
