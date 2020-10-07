@@ -3,6 +3,8 @@
  */
 
 const bcrypt = require("bcryptjs");
+const nodeemailer = require("nodemailer");
+const sendgridTransport = require("nodemailer-sendgrid-transport");
 
 /**
  *  =========== End  Packages =========
@@ -15,6 +17,19 @@ const bcrypt = require("bcryptjs");
 const User = require("../models/user");
 /**
  *  =========== End Models ==============
+ */
+/**
+ *  =========== Global Variabel ==============
+ */
+const transporter = nodeemailer.createTransport(
+  sendgridTransport({
+    auth: {
+      api_key: "Yourkey",
+    },
+  })
+);
+/**
+ *  =========== End Global Variabel ==============
  */
 
 exports.getLogin = (req, res, next) => {
@@ -108,6 +123,23 @@ exports.postSignup = (req, res, next) => {
           return userData.save();
         })
         .then((result) => {
+          /**
+           * Sending Email, uncomment if u want to implement this code
+           */
+          // res.redirect("/login");
+          // return transporter
+          //   .sendMail({
+          //     to: email,
+          //     from: "youremail@email.com",
+          //     subject: "Signup Succeeded!",
+          //     html: "<h1>You Successfully signed up!</h1>",
+          //   })
+          //   .then((result) => {})
+          //   .catch((err) => {});
+
+          /**
+           * End Sending Email
+           */
           res.redirect("/login");
         });
     })
