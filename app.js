@@ -7,6 +7,7 @@ const bodyParser = require("body-parser");
 const path = require("path");
 const mongoose = require("mongoose");
 const session = require("express-session");
+const flash = require("connect-flash");
 const csrf = require("csurf");
 const cookieParser = require("cookie-parser");
 const MongoDBStore = require("connect-mongodb-session")(session);
@@ -63,6 +64,8 @@ app.use(
 );
 // Initialize csrf
 app.use(csurfProtection);
+// initialize connect-flash
+app.use(flash());
 // Initialize session of user
 app.use((req, res, next) => {
   if (!req.session.user) {
