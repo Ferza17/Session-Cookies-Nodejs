@@ -61,8 +61,9 @@ app.use(
     store: storeSession,
   })
 );
+// Initialize csrf
 app.use(csurfProtection);
-
+// Initialize session of user
 app.use((req, res, next) => {
   if (!req.session.user) {
     return next();
@@ -77,14 +78,14 @@ app.use((req, res, next) => {
       console.log("err :>> ", err);
     });
 });
-
+// Initialize ccsrf &authentication login
 app.use((req, res, next) => {
   app.locals.isAuthenticated = req.session.isLoggedIn;
   app.locals.csrfToken = req.csrfToken();
   next();
 });
 
-//Routes
+//initialize routes
 app.use("/admin", adminRoutes.routes);
 app.use(shopRoutes);
 app.use(authRoutes);
@@ -96,12 +97,6 @@ app.use(errorController.get404);
  */
 
 /**
- *  =============== Express  App =============
- */
-
-/**
- *  =============== End Express  App =============
- */
 
 /**
  *  =============== Connecting to Server & Database =============
