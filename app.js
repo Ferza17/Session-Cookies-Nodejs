@@ -7,6 +7,7 @@ const bodyParser = require("body-parser");
 const path = require("path");
 const mongoose = require("mongoose");
 const session = require("express-session");
+const flash = require("connect-flash");
 const csrf = require("csurf");
 const cookieParser = require("cookie-parser");
 const MongoDBStore = require("connect-mongodb-session")(session);
@@ -61,8 +62,11 @@ app.use(
     store: storeSession,
   })
 );
+// Initialize csrf
 app.use(csurfProtection);
-
+// initialize connect-flash
+app.use(flash());
+// Initialize session of user
 app.use((req, res, next) => {
   if (!req.session.user) {
     return next();
@@ -77,14 +81,14 @@ app.use((req, res, next) => {
       console.log("err :>> ", err);
     });
 });
-
+// Initialize ccsrf &authentication login
 app.use((req, res, next) => {
   app.locals.isAuthenticated = req.session.isLoggedIn;
   app.locals.csrfToken = req.csrfToken();
   next();
 });
 
-//Routes
+//initialize routes
 app.use("/admin", adminRoutes.routes);
 app.use(shopRoutes);
 app.use(authRoutes);
@@ -96,12 +100,6 @@ app.use(errorController.get404);
  */
 
 /**
- *  =============== Express  App =============
- */
-
-/**
- *  =============== End Express  App =============
- */
 
 /**
  *  =============== Connecting to Server & Database =============

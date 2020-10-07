@@ -18,10 +18,12 @@ const User = require("../models/user");
  */
 
 exports.getLogin = (req, res, next) => {
+  let message = req.flash("error");
+  message.length > 0 ? (message = message[0]) : (message = null);
   res.render("auth/login", {
     path: "/login",
     pageTitle: "Login",
-    isAuthenticated: false,
+    errorMessage: message,
   });
 };
 
@@ -44,14 +46,16 @@ exports.postLogin = (req, res, next) => {
               });
               return res.redirect("/");
             }
+            req.flash("error", "Invalid email or password.");
             res.redirect("/login");
           })
           .catch((err) => {
             console.log("err :>> ", err);
+            req.flash("error", "Invalid email or password.");
             return res.redirect("/login");
           });
       }
-
+      req.flash("error", "Invalid email or password.");
       return res.redirect("/login");
     })
     .catch((err) => {});
@@ -65,10 +69,12 @@ exports.postLogout = async (req, res, next) => {
 };
 
 exports.getSignup = (req, res, next) => {
+  let message = req.flash("error");
+  message.length > 0 ? (message = message[0]) : (message = null);
   res.render("auth/signup", {
     path: "/signup",
     pageTitle: "Signup",
-    isAuthenticated: false,
+    errorMessage: message,
   });
 };
 
@@ -77,14 +83,15 @@ exports.postSignup = (req, res, next) => {
   const password = req.body.password;
   const confirmPassword = req.body.confirmPassword;
 
-  console.log("email :>> ", email);
-  console.log("password :>> ", password);
-
   User.findOne({
     email: email,
   })
     .then((user) => {
       if (user) {
+        req.flash(
+          "error",
+          "E-Mail exists already, please pick a different one !."
+        );
         return res.redirect("/signup");
       }
 
