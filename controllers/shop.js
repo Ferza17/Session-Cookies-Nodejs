@@ -48,7 +48,6 @@ exports.getIndex = (req, res, next) => {
         hasProduct: products.length > 0,
         activeShop: true,
         productCSS: true,
-        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((err) => {});
