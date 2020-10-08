@@ -1,7 +1,7 @@
 /**
  *  =========== Packages ==============
  */
-
+const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
 const nodeemailer = require("nodemailer");
 const sendgridTransport = require("nodemailer-sendgrid-transport");
@@ -15,6 +15,7 @@ const sendgridTransport = require("nodemailer-sendgrid-transport");
  */
 
 const User = require("../models/user");
+const { use } = require("../routes/auth");
 /**
  *  =========== End Models ==============
  */
@@ -145,5 +146,113 @@ exports.postSignup = (req, res, next) => {
     })
     .catch((err) => {
       console.log("err email :>> ", err);
+    });
+};
+
+exports.getReset = (req, res, next) => {
+  let message = req.flash("error");
+  message.length > 0 ? (message = message[0]) : (message = null);
+  res.render("auth/reset", {
+    path: "/reset",
+    pageTitle: "Reset Password",
+    errorMessage: message,
+  });
+};
+
+exports.postReset = (req, res, next) => {
+  crypto.randomBytes(32, async (err, buffer) => {
+    if (err) {
+      console.log("err :>> ", err);
+      return redirect("/");
+    }
+    const token = buffer.toString("hex");
+    await User.findOne({ email: req.body.email })
+      .then((user) => {
+        if (!user) {
+          req.flash("error", "No account with that email found.");
+          return res.redirect("/reset");
+        }
+
+        user.resetToken = token;
+        user.resetTokenExpiration = Date.now() + 3600000;
+        return user.save();
+      })
+      .then((result) => {
+        /**
+         *  ==== Sending email with transpoter ===
+         */
+        // res.redirect("/");
+        //  transporter
+        //   .sendMail({
+        //     to: email,
+        //     from: "youremail@email.com",
+        //     subject: "Password Reset.",
+        //     html: `
+        // <p>You Requested a password Reset</p>
+        // <p>Click this <a href="http://localhost:4000/reset/${token}" >Link</a>to set a new Password.</p>
+        // `,
+        //   })
+        //   .then((result) => {})
+        //   .catch((err) => {});
+        /**
+         *  ==== End Sending email with transpoter ===
+         */
+
+        res.redirect("/reset/" + token);
+      })
+      .catch((err) => {
+        console.log("err :>> ", err);
+      });
+  });
+};
+
+exports.getNewPassword = (req, res, next) => {
+  const token = req.params.token;
+  User.findOne({
+    resetToken: token,
+    resetTokenExpiration: {
+      $gt: Date.now(),
+    },
+  })
+    .then((user) => {
+      let message = req.flash("error");
+      message.length > 0 ? (message = message[0]) : (message = null);
+      res.render("auth/new-password", {
+        path: "/new-password",
+        pageTitle: "Update Password",
+        errorMessage: message,
+        userId: user._id.toString(),
+        passwordToken: token,
+      });
+    })
+    .catch((err) => {});
+};
+
+exports.postNewPassword = (req, res, next) => {
+  const newPassword = req.body.password;
+  const userId = req.body.userId;
+  const passwordToken = req.body.passwordToken;
+  let resetUser;
+
+  User.findOne({
+    resetToken: passwordToken,
+    resetTokenExpiration: { $gt: Date.now() },
+    _id: userId,
+  })
+    .then((user) => {
+      resetUser = user;
+      return (user.password = bcrypt.hash(newPassword, 12));
+    })
+    .then((hashPassword) => {
+      resetUser.password = hashPassword;
+      resetUser.resetToken = null;
+      resetUser.resetTokenExpiration = undefined;
+      return resetUser.save();
+    })
+    .then((result) => {
+      res.redirect("/login");
+    })
+    .catch((err) => {
+      console.log("err :>> ", err);
     });
 };
