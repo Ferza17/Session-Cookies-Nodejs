@@ -30,7 +30,9 @@ exports.postAddProduct = (req, res, next) => {
       res.redirect("/admin/products");
     })
     .catch((err) => {
-      console.log("err created product:>> ", err);
+      const error = new Error(err);
+      err.httpStatusCode = 500;
+      return next(error);
     });
 };
 
@@ -52,7 +54,11 @@ exports.getEditProduct = (req, res, next) => {
         product: product,
       });
     })
-    .catch((err) => {});
+    .catch((err) => {
+      const error = new Error(err);
+      err.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 exports.postEditProduct = (req, res, next) => {
@@ -75,7 +81,9 @@ exports.postEditProduct = (req, res, next) => {
       });
     })
     .catch((err) => {
-      console.log("err postEditProduct :>> ", err);
+      const error = new Error(err);
+      err.httpStatusCode = 500;
+      return next(error);
     });
 };
 
@@ -88,7 +96,11 @@ exports.postDeleteProduct = (req, res, next) => {
     .then((result) => {
       res.redirect("/admin/products");
     })
-    .catch((err) => {});
+    .catch((err) => {
+      const error = new Error(err);
+      err.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 exports.getProducts = (req, res, next) => {
@@ -107,5 +119,9 @@ exports.getProducts = (req, res, next) => {
         productCSS: true,
       });
     })
-    .catch((err) => {});
+    .catch((err) => {
+      const error = new Error(err);
+      err.httpStatusCode = 500;
+      return next(error);
+    });
 };
