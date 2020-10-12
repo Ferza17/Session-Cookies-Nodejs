@@ -10,6 +10,7 @@ const session = require("express-session");
 const flash = require("connect-flash");
 const csrf = require("csurf");
 const cookieParser = require("cookie-parser");
+const multer = require("multer");
 const MongoDBStore = require("connect-mongodb-session")(session);
 
 /**
@@ -32,6 +33,26 @@ const storeSession = new MongoDBStore({
   collection: "sessions",
 });
 const csurfProtection = csrf({ cookie: true });
+// Multer Configuration
+const fileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "images");
+  },
+  filename: (req, file, cb) => {
+    cb(null, new Date().toISOString() + "-" + file.originalname);
+  },
+});
+const fileFilter = (rq, file, cb) => {
+  if (
+    file.mimetype === "image/png" ||
+    file.mimetype === "image/jpg" ||
+    file.mimetype === "image/jpeg"
+  ) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
 // routes Variable
 const shopRoutes = require("./routes/shop");
 const authRoutes = require("./routes/auth");
@@ -52,6 +73,12 @@ const errorController = require("./controllers/error");
 app.set("view engine", "ejs");
 app.set("views", "views");
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(
+  multer({
+    storage: fileStorage,
+    fileFilter: fileFilter,
+  }).single("image")
+);
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cookieParser());
 app.use(

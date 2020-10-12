@@ -2,6 +2,8 @@
  * ======== Packages ========
  */
 const express = require("express");
+const { check, body } = require("express-validator/check");
+
 /**
  * ========  End Packages ========
  */
@@ -35,11 +37,24 @@ const router = express.Router();
  */
 
 // /admin/products
-router.get("/products", isAuth, AdminController.getProducts);
+router.get(
+  "/products",
+  isAuth,
+
+  AdminController.getProducts
+);
 
 // /admin/add-product
 router.get("/add-product", isAuth, AdminController.getAddProduct);
-router.post("/add-product", AdminController.postAddProduct);
+router.post(
+  "/add-product",
+  [
+    body("title").isString().isLength({ min: 3 }).trim(),
+    body("price").isFloat(),
+    body("description").isLength({ min: 5, max: 400 }).trim(),
+  ],
+  AdminController.postAddProduct
+);
 
 //  /admin/edit-product
 router.get("/edit-product/:productId", isAuth, AdminController.getEditProduct);

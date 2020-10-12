@@ -1,6 +1,8 @@
 const Product = require("../models/product");
 
 exports.getAddProduct = (req, res, next) => {
+  let message = req.flash("error");
+  message.length > 0 ? (message = message[0]) : (message = null);
   if (!req.session.isLoggedIn) {
     return res.redirect("/login");
   }
@@ -8,12 +10,14 @@ exports.getAddProduct = (req, res, next) => {
     pageTitle: "Add Product",
     path: "/admin/add-product",
     editing: false,
+    errorMessage: message,
   });
 };
 
 exports.postAddProduct = (req, res, next) => {
+  let message = req.flash("error");
   const title = req.body.title;
-  const imageURL = req.body.imageUrl;
+  const imageURL = req.file;
   const price = parseFloat(req.body.price);
   const description = req.body.description;
   const product = new Product({
@@ -37,6 +41,8 @@ exports.postAddProduct = (req, res, next) => {
 };
 
 exports.getEditProduct = (req, res, next) => {
+  let message = req.flash("error");
+  message.length > 0 ? (message = message[0]) : (message = null);
   const editMode = req.query.edit;
   if (!editMode) {
     return res.redirect("/");
@@ -52,6 +58,7 @@ exports.getEditProduct = (req, res, next) => {
         path: "/admin/edit-product",
         editing: editMode,
         product: product,
+        errorMessage: message,
       });
     })
     .catch((err) => {
