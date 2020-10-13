@@ -36,11 +36,7 @@ exports.postAddProduct = (req, res, next) => {
       errorMessage: "Attached file is not an image.",
     });
   }
-  console.log("imageUrl :>> ", imageUrl);
-  // Filtering image URL
-  // const imageFilter = imageUrl
-  //   .substring(imageUrl.indexOf(""))
-  //   .replace("\\", "/");
+  // For Windows use this 
   const imageFilter = imageUrl.split("i").pop().replace("\\", "/");
 
   const product = new Product({

@@ -1,7 +1,21 @@
+/**
+ *  ============ Packages ===============
+ */
+const fs = require("fs");
+const path = require("path");
+/**
+ *  ============ End Packages ===============
+ */
+/**
+ *  ============ Models ===============
+ */
 const Product = require("../models/product");
 const Cart = require("../models/cart");
 const Order = require("../models/order");
-
+const order = require("../models/order");
+/**
+ *  ============ End Models ===============
+ */
 // Call Back Functions
 exports.getProducts = (req, res, next) => {
   Product.find()
@@ -131,5 +145,33 @@ exports.postOrders = (req, res, next) => {
     })
     .catch((err) => {
       console.log("err :>> ", err);
+    });
+};
+
+exports.getInvoice = (req, res, next) => {
+  const orderId = req.params.orderId;
+  Order.findById(orderId)
+    .then((result) => {
+      if (!order) {
+        return next(new Error("No order Found."));
+      }
+
+      if (order.user.userId.toString() == req.user._id.toString()) {
+        return next(new Error("~Unaothorized."));
+      }
+
+      const invoiceName = "invoice-" + orderId + ".pdf";
+      const invoicePath = path.join("data", "invoices", invoiceName);
+      fs.readFile(invoicePath, (err, data) => {
+        if (err) {
+          return next(err);
+        }
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader("Content-Disposition", "inline");
+        res.send(data);
+      });
+    })
+    .catch((err) => {
+      next(err);
     });
 };
