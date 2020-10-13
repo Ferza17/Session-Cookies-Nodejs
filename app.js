@@ -11,6 +11,7 @@ const flash = require("connect-flash");
 const csrf = require("csurf");
 const cookieParser = require("cookie-parser");
 const multer = require("multer");
+const fileUpload = require("express-fileupload");
 const MongoDBStore = require("connect-mongodb-session")(session);
 
 /**
@@ -36,13 +37,13 @@ const csurfProtection = csrf({ cookie: true });
 // Multer Configuration
 const fileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "images");
+    cb(null, path.join(__dirname, "/images"));
   },
   filename: (req, file, cb) => {
-    cb(null, new Date().toISOString() + "-" + file.originalname);
+    cb(null, Date.now() + "-" + path.extname(file.originalname));
   },
 });
-const fileFilter = (rq, file, cb) => {
+const fileFilter = (req, file, cb) => {
   if (
     file.mimetype === "image/png" ||
     file.mimetype === "image/jpg" ||
@@ -80,7 +81,9 @@ app.use(
   }).single("image")
 );
 app.use(express.static(path.join(__dirname, "public")));
+app.use("/images", express.static(path.join(__dirname, "images")));
 app.use(cookieParser());
+app.use(fileUpload());
 app.use(
   session({
     secret: "my secret",
@@ -127,9 +130,9 @@ app.use(authRoutes);
 app.get("/500", errorController.get500);
 app.use(errorController.get404);
 // Error Middleware
-app.use((error, req, res, next) => {
-  res.redirect("/500");
-});
+// app.use((error, req, res, next) => {
+//   res.redirect("/500");
+// });
 
 /**
  * ========== End Initialize all stuf ========
