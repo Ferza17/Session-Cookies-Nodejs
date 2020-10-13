@@ -17,14 +17,37 @@ exports.getAddProduct = (req, res, next) => {
 exports.postAddProduct = (req, res, next) => {
   let message = req.flash("error");
   const title = req.body.title;
-  const imageURL = req.file;
+  const image = req.file;
   const price = parseFloat(req.body.price);
   const description = req.body.description;
+  const imageUrl = image.path;
+  if (!image) {
+    return res.status(422).render("admin/edit-product", {
+      pageTitle: "Add Product",
+      path: "/admin/edit-product",
+      editing: true,
+      product: {
+        title: title,
+        price: price,
+        description: description,
+        imageUrl: imageUrl,
+        userId: req.user,
+      },
+      errorMessage: "Attached file is not an image.",
+    });
+  }
+  console.log("imageUrl :>> ", imageUrl);
+  // Filtering image URL
+  // const imageFilter = imageUrl
+  //   .substring(imageUrl.indexOf(""))
+  //   .replace("\\", "/");
+  const imageFilter = imageUrl.split("i").pop().replace("\\", "/");
+
   const product = new Product({
     title: title,
     price: price,
     description: description,
-    imageUrl: imageURL,
+    imageUrl: "http://localhost:4000/i" + imageFilter,
     userId: req.user,
   });
   product
@@ -34,9 +57,10 @@ exports.postAddProduct = (req, res, next) => {
       res.redirect("/admin/products");
     })
     .catch((err) => {
-      const error = new Error(err);
-      err.httpStatusCode = 500;
-      return next(error);
+      console.log("err :>> ", err);
+      // const error = new Error(err);
+      // err.httpStatusCode = 500;
+      // return next(error);
     });
 };
 
@@ -72,8 +96,9 @@ exports.postEditProduct = (req, res, next) => {
   const prodId = req.body.productId;
   const updatedTitle = req.body.title;
   const updatedPrice = parseFloat(req.body.price);
-  const updatedImageUrl = req.body.imageUrl;
+  const image = req.file;
   const updatedDescription = req.body.description;
+  const updatedImageUrl = image.path;
   Product.findById(prodId)
     .then((product) => {
       if (product.userId.toString() !== req.user._id.toString()) {

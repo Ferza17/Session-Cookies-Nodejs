@@ -3,6 +3,7 @@
  */
 const express = require("express");
 const { check, body } = require("express-validator/check");
+const multer = require("multer");
 
 /**
  * ========  End Packages ========
@@ -45,16 +46,17 @@ router.get(
 );
 
 // /admin/add-product
-router.get("/add-product", isAuth, AdminController.getAddProduct);
-router.post(
+router.get(
   "/add-product",
+  isAuth,
   [
     body("title").isString().isLength({ min: 3 }).trim(),
     body("price").isFloat(),
     body("description").isLength({ min: 5, max: 400 }).trim(),
   ],
-  AdminController.postAddProduct
+  AdminController.getAddProduct
 );
+router.post("/add-product", AdminController.postAddProduct);
 
 //  /admin/edit-product
 router.get("/edit-product/:productId", isAuth, AdminController.getEditProduct);
