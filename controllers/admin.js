@@ -1,5 +1,17 @@
+/**
+ *  ============= Models =============
+ */
 const Product = require("../models/product");
-
+/**
+ *  ============= ENd Models =============
+ */
+/**
+ *  ============= Helper =============
+ */
+const fileHelper = require("../util/file");
+/**
+ *  ============= End Helper =============
+ */
 exports.getAddProduct = (req, res, next) => {
   let message = req.flash("error");
   message.length > 0 ? (message = message[0]) : (message = null);
@@ -36,11 +48,7 @@ exports.postAddProduct = (req, res, next) => {
       errorMessage: "Attached file is not an image.",
     });
   }
-  console.log("imageUrl :>> ", imageUrl);
-  // Filtering image URL
-  // const imageFilter = imageUrl
-  //   .substring(imageUrl.indexOf(""))
-  //   .replace("\\", "/");
+  // For Windows use this
   const imageFilter = imageUrl.split("i").pop().replace("\\", "/");
 
   const product = new Product({
@@ -106,8 +114,12 @@ exports.postEditProduct = (req, res, next) => {
       }
       product.title = updatedTitle;
       product.price = updatedPrice;
-      product.imageUrl = updatedImageUrl;
       product.description = updatedDescription;
+      if (image) {
+        fileHelper.deleteFile(product.imageUr);
+        product.imageUrl = updatedImageUrl;
+      }
+
       return product.save().then((result) => {
         res.redirect("/");
       });
@@ -121,18 +133,26 @@ exports.postEditProduct = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
   const productId = req.body.productId;
-  Product.deleteOne({
-    _id: productId,
-    userId: req.user._id,
-  })
-    .then((result) => {
-      res.redirect("/admin/products");
+  Product.findById(productId)
+    .then((product) => {
+      if (!product) {
+        return next(new Error("Product Not Found!"));
+      }
+      fileHelper.deleteFile(product.imageUrl);
+      return Product.deleteOne({
+        _id: productId,
+        userId: req.user._id,
+      })
+        .then((result) => {
+          res.redirect("/admin/products");
+        })
+        .catch((err) => {
+          const error = new Error(err);
+          err.httpStatusCode = 500;
+          return next(error);
+        });
     })
-    .catch((err) => {
-      const error = new Error(err);
-      err.httpStatusCode = 500;
-      return next(error);
-    });
+    .catch((err) => next(err));
 };
 
 exports.getProducts = (req, res, next) => {
