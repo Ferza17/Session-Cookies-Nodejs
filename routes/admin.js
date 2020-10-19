@@ -63,7 +63,8 @@ router.get("/edit-product/:productId", isAuth, AdminController.getEditProduct);
 router.post("/edit-product", AdminController.postEditProduct);
 
 // /admin/delete-product
-router.post("/delete-product", AdminController.postDeleteProduct);
+// router.post("/delete-product", AdminController.postDeleteProduct);
+router.delete("/product/:productId", isAuth, AdminController.deleteProduct);
 
 /**
  * ======== End Routes ========
